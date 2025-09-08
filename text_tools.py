@@ -32,7 +32,6 @@ async def test_split_by_words():
 
 
 def calculate_jaundice_rate(article_words, charged_words):
-    """Расчитывает желтушность текста, принимает список "заряженных" слов и ищет их внутри article_words."""
     if not article_words:
         return 0.0
 
