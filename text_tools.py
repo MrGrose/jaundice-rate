@@ -1,38 +1,38 @@
-import pymorphy2
+import asyncio
 import string
+
+import pymorphy3
+import pytest
 
 
 def _clean_word(word):
-    word = word.replace('«', '').replace('»', '').replace('…', '')
-    # FIXME какие еще знаки пунктуации часто встречаются ?
+    word = word.replace('«', '').replace('»', '').replace('…', '').replace(':', '').replace('(', '').replace(')', '')
     word = word.strip(string.punctuation)
     return word
 
 
-def split_by_words(morph, text):
-    """Учитывает знаки пунктуации, регистр и словоформы, выкидывает предлоги."""
+async def split_by_words(morph, text):
     words = []
     for word in text.split():
         cleaned_word = _clean_word(word)
         normalized_word = morph.parse(cleaned_word)[0].normal_form
         if len(normalized_word) > 2 or normalized_word == 'не':
             words.append(normalized_word)
+        await asyncio.sleep(0)
     return words
 
 
-def test_split_by_words():
-    # Экземпляры MorphAnalyzer занимают 10-15Мб RAM т.к. загружают в память много данных
-    # Старайтесь организовать свой код так, чтоб создавать экземпляр MorphAnalyzer заранее и в единственном числе
-    morph = pymorphy2.MorphAnalyzer()
-
-    assert split_by_words(morph, 'Во-первых, он хочет, чтобы') == ['во-первых', 'хотеть', 'чтобы']
-
-    assert split_by_words(morph, '«Удивительно, но это стало началом!»') == ['удивительно', 'это', 'стать', 'начало']
+@pytest.mark.asyncio
+async def test_split_by_words():
+    morph = pymorphy3.MorphAnalyzer()
+    assert await split_by_words(morph, 'Во-первых, он хочет, чтобы') == ['во-первых', 'хотеть', 'чтобы']
+    assert await split_by_words(morph, '«Удивительно, но это стало началом!»') == ['удивительно', 'это', 'стать', 'начало']
+    assert await split_by_words(morph, 'USA@ Today (США): Трамп пообещал «пока» не вводить новые пошлины на китайские товары в связи с возобновлением переговоров (USA@ Today, | США) ') == ['usa', 'today', 'сша', 'трамп', 'пообещать', 'пока', 'не', 'вводить', 'новый', 'пошлина', 'китайский', 'товар', 'связь', 'возобновление', 'переговоры', 'usa', 'today', 'сша']
+    assert await split_by_words(morph, '«Рукопожатие$ вместо враждебности»!: Индия и Китай пересматривают отношения после того, как Моди и Си Цзиньпин отреагировали на пошлины Трампа = (Times of India, Индия)) ') == ['рукопожатие', 'вместо', 'враждебность', 'индия', 'китай', 'пересматривать', 'отношение', 'после', 'тот', 'как', 'модить', 'цзиньпин', 'отреагировать', 'пошлина', 'трамп', 'times', 'india', 'индия']
 
 
 def calculate_jaundice_rate(article_words, charged_words):
     """Расчитывает желтушность текста, принимает список "заряженных" слов и ищет их внутри article_words."""
-
     if not article_words:
         return 0.0
 

@@ -18,8 +18,42 @@ pip install -r requirements.txt
 
 # Как запустить
 
-```python3
-python main.py
+1. Запускаете скрипт: `python python main.py`
+
+2. В браузере вставляете (либо какие статьи вам нужны, после *urls=*): `http://127.0.0.1:8080/?urls=https://inosmi.ru/politic/20190629/245376799.html,https://inosmi.ru/20250904/svo-274525966.html,https://lenta.ru/brief/2021/08/26/afg_terror/,https://inosmi.rr/`
+
+3. Кол-во url ссылок ограничено 10.
+
+## Пример овтета:
+```json
+{
+  "articles": [
+    {
+      "status": "PARSING_ERROR",
+      "url": "https://lenta.ru/brief/2021/08/26/afg_terror/",
+      "score": null,
+      "words_count": null
+    },
+    {
+      "status": "OK",
+      "url": "https://inosmi.ru/politic/20190629/245376799.html",
+      "score": 3.5,
+      "words_count": 571
+    },
+    {
+      "status": "OK",
+      "url": "https://inosmi.ru/20250904/svo-274525966.html",
+      "score": 1.07,
+      "words_count": 657
+    },
+    {
+      "status": "FETCH_ERROR",
+      "url": "https://inosmi.rr/",
+      "score": null,
+      "words_count": null
+    }
+  ]
+}
 ```
 
 # Как запустить тесты
@@ -32,6 +66,10 @@ python -m pytest adapters/inosmi_ru.py
 
 ```
 python -m pytest text_tools.py
+```
+
+```
+python -m pytest test_articles.py
 ```
 
 # Цели проекта
