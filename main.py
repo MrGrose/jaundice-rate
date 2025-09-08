@@ -96,7 +96,7 @@ async def handle(request, morph, charged_words):
                 for url in urls:
                     tg.start_soon(process_article, session, morph, charged_words, url, articles, delay)
         except* asyncio.TimeoutError as e:
-            logging.error(f"Timeout: {e}")
+            logging.error(f"Ожидания истекло: {e}")
         except* Exception as e:
             logging.exception(f"Ошибка: {e}")
 
